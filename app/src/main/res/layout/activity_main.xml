@@ -18,7 +18,7 @@
         android:id="@+id/textView"
         android:maxLength="16"
         tools:padding="15dp"
-        android:textSize="30sp"
+        android:textSize="40sp"
         android:gravity="right|center_vertical"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
