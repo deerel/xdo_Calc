@@ -11,11 +11,8 @@ import android.widget.TextView;
 import net.objecthunter.exp4j.Expression;
 import net.objecthunter.exp4j.ExpressionBuilder;
 
-import java.io.Console;
-
-
 public class MainActivity extends AppCompatActivity {
-    // IDs of all the numeric buttons
+    //
     private int[] numericButtons = {R.id.button0, R.id.button1, R.id.button2, R.id.button3, R.id.button4, R.id.button5, R.id.button6, R.id.button7, R.id.button8, R.id.button9};
     // IDs of all the operator buttons
     private int[] operatorButtons = {R.id.buttonPlus, R.id.buttonMinus, R.id.buttonTimes, R.id.buttonDivide};
@@ -34,8 +31,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
-
-
         // Find the TextView
         this.txtScreen = (TextView) findViewById(R.id.textView);
         // Find and set OnClickListener to numeric buttons
@@ -47,40 +42,28 @@ public class MainActivity extends AppCompatActivity {
         operand = "";
     }
 
-    /**
-     * Find and set OnClickListener to numeric buttons.
-     */
     private void setNumericOnClickListener() {
         // Create a common OnClickListener
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*
-                // Just append/set the text of clicked button
-                Button button = (Button) v;
-                if (stateError || atStart) {
-                    // If current state is Error, replace the error message
-                    txtScreen.setText(button.getText());
-                    stateError = atStart = false;
-                } else {
-                    // If not, already there is a valid expression so append to it
-                    txtScreen.append(button.getText());
-                }*/
-
                 Button button = (Button) v;
                 Log.d("STATE", "Numeric Button Was Pressed");
                 if(operand == "") {
-                    leftNum = button.getText().toString();
-                    txtScreen.setText(button.getText());
+                    if(atStart==true) {
+                        leftNum = button.getText().toString();
+                    } else {
+                        leftNum = leftNum + button.getText().toString();
+                    }
+                    txtScreen.setText(leftNum);
+                    atStart=false;
                     Log.d("STATE", "LEFT" + leftNum );
                 } else {
-                    rightNum = button.getText().toString();
+                    rightNum = rightNum + button.getText().toString();
+                    txtScreen.setText(rightNum);
                     Log.d("STATE", "RIGHT" + rightNum );
                 }
                 }
-                // Set the flag
-                //lastNumeric = true;
-
         };
         // Assign the listener to all the numeric buttons
         for (int id : numericButtons) {
@@ -88,9 +71,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Find and set OnClickListener to operator buttons, equal button and decimal point button.
-     */
     private void setOperatorOnClickListener() {
         // Create a common OnClickListener for operators
         View.OnClickListener listener = new View.OnClickListener() {
@@ -105,13 +85,6 @@ public class MainActivity extends AppCompatActivity {
                 Button button = (Button) v;
                 operand = button.getText().toString();
                 Log.d("STATE", operand );
-                /*if (lastNumeric && !stateError) {
-                    Button button = (Button) v;
-                    txtScreen.append(button.getText());
-                    operand = button.getText().toString();
-                    Log.d("STATE", operand );
-                    lastNumeric = false;
-                }*/
             }
         };
         // Assign the listener to all the operator buttons
@@ -128,6 +101,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void opEqual() {
+        if(leftNum=="" || rightNum == "" || operand == "") {
+            return;
+        }
         Log.d("STATE", "OP Equal heard!");
         Log.d("STATE", leftNum + operand +  rightNum);
         String txt = leftNum + operand +  rightNum;
@@ -139,10 +115,10 @@ public class MainActivity extends AppCompatActivity {
         atStart = true;
     }
 
-    /**
-     * Logic to calculate the solution.
-     */
     private void onEqual() {
+        if(leftNum=="" || rightNum == "" || operand == "") {
+            return;
+        }
         Log.d("STATE", "EQ Equal heard!");
         Log.d("STATE", leftNum + operand +  rightNum);
         String txt = leftNum + operand +  rightNum;
@@ -153,27 +129,5 @@ public class MainActivity extends AppCompatActivity {
         rightNum = "";
         operand = "";
         atStart = true;
-        // If the current state is error, nothing to do.
-        // If the last input is a number only, solution can be found.
-        /*
-        if (lastNumeric && !stateError) {
-            // Read the expression
-            String txt = Double.toString(leftNum) + operand +  Double.toString(rightNum);
-            // Create an Expression (A class from exp4j library)
-            Expression expression = new ExpressionBuilder(txt).build();
-            try {
-                // Calculate the result and display
-                double result = expression.evaluate();
-                txtScreen.setText(Double.toString(result));
-            } catch (ArithmeticException ex) {
-                // Display an error message
-                txtScreen.setText("Error!");
-                stateError = true;
-                lastNumeric = false;
-            }
-            operand = "";
-            atStart = true;
-        }
-        */
     }
 }
